@@ -1,0 +1,39 @@
+.DS_Store
+node_modules
+Thumbs.db
+
+# local env files
+.env.local
+.env.*.local
+deploy/.env
+# 含数易本地账户口令哈希与 LDAP 配置，按部署环境各自维护
+deploy/config.ini
+.svn
+
+# Log files
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor directories and files
+.idea
+# .vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+/dist
+/harmonypc-electron-versions
+/_test
+
+.cache
+.deveco
+.sisyphus
+.opencode
+.omo
+.codegraph
+.playwright-mcp

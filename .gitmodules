@@ -1,0 +1,12 @@
+[submodule "opencode"]
+	path = opencode
+	url = https://github.com/anomalyco/opencode
+[submodule "oc-desktop-hos"]
+	path = oc-desktop-hos
+	url = https://github.com/fellow99/oc-desktop-hos.git
+[submodule "oc-desktop-website"]
+	path = oc-desktop-website
+	url = https://github.com/fellow99/oc-desktop-website.git
+[submodule "harmonypc-electron"]
+	path = harmonypc-electron
+	url = https://github.com/fellow99/harmonypc-electron.git
