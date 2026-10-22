@@ -10,9 +10,6 @@
 [submodule "harmonypc-electron"]
 	path = harmonypc-electron
 	url = https://github.com/fellow99/harmonypc-electron.git
-[submodule "ohos-node-bridge"]
-	path = ohos-node-bridge
-	url = https://github.com/fellow99/ohos-node-bridge.git
 [submodule "oc-desktop-ark"]
 	path = oc-desktop-ark
 	url = https://github.com/fellow99/oc-desktop-ark.git
