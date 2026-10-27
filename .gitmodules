@@ -13,3 +13,6 @@
 [submodule "oc-desktop-ark"]
 	path = oc-desktop-ark
 	url = https://github.com/fellow99/oc-desktop-ark.git
+[submodule "oc-desktop-android"]
+	path = oc-desktop-android
+	url = https://github.com/fellow99/oc-desktop-android.git
