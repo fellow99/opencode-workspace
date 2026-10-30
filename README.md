@@ -29,7 +29,8 @@
 | [`oc-desktop-hos`](oc-desktop-hos) | **Electron on HarmonyOS Edition**（应用） | 用 `harmonypc-electron` 提供的 Electron-on-HarmonyOS 运行时承载 opencode 服务端；已构建、签名，并在真机完成安装启动与基本流程验证（v2.0.26，证据见 `oc-desktop-hos/docs/鸿蒙环境能力清单-v2.0.26.md` §10 / §11.2）。含 8 条上游补丁（`patches/v2.0.26/0001–0008`）与 ACL / 能力清单 / 真机记录。 |
 | [`harmonypc-electron`](harmonypc-electron) | Electron-on-HarmonyOS 运行时（submodule） | Electron 鸿蒙外壳与 `libelectron.so` 适配层；**只有 Electron on HarmonyOS Edition 使用**，HarmonyOS Edition **不依赖**它。 |
 | [`oc-desktop-website`](oc-desktop-website) | 产品官网（submodule） | 纯静态落地页（中英双语）：两个鸿蒙版别的定位、能力与仓库入口。 |
-| `assets/` | 品牌物料 | Logo、截图等（官网与安装包共用）。 |
+
+| [`oc-desktop-android`](oc-desktop-android) | **Android Edition**（应用） | 进程内 Node v24.x（`io.github.fellow99:node-bridge` + `node-runtime`，Maven）+ **系统 WebView**；无 Electron、无内嵌内核：进程内跑 opencode v2.1.2 serve（同源托管 /api/* 与内嵌 Web UI），WebView 加载 127.0.0.1。含 `specs/`（14 模块）、`patches/v2.1.2/`（五件套 + 0009/0010）、四壳插件（git/搜索/工作区/pnpm）、品牌化与构建流水线（补丁→构建→物化→冒烟→回归）。 || `assets/` | 品牌物料 | Logo、截图等（官网与安装包共用）。 |
 | `harmonypc-electron-versions/` | 本地材料（gitignore） | Electron 发行版归档与原生模块编译材料；不入库。 |
 
 ## 三、责任分界
