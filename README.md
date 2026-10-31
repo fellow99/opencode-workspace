@@ -1,74 +1,148 @@
-# opencode-workspace
+# OC Desktop
 
-> **opencode 的 HarmonyOS 工作区**（submodule 容器）：固定上游基线，聚合 **两个鸿蒙版别**
-> 与产品官网。所有子工程共享同一个上游 `opencode`，互不复制源码。
-> 进程内 Node 运行时库已上架 ohpm 中心仓（`@fellow99/node-bridge` + `@fellow99/node-runtime`），
-> 不再以 submodule 形式收纳。
+> [简体中文](./README_zh.md)
 
-## 一、两个鸿蒙版别（统一口径）
+**OC Desktop is the desktop form of [opencode](https://opencode.ai).**
 
-| 版别 | 工程 | 运行时与渲染 | 包名 |
+opencode already ships an official desktop app for Windows / Linux / macOS. This workspace focuses on bringing the same experience to mobile platforms — **three independent third-party editions** for HarmonyOS and Android, all running the in-process opencode server and loading the official Web UI same-origin:
+
+| Edition | Repository | Runtime | Renderer |
 |---|---|---|---|
-| **HarmonyOS Edition** | [`oc-desktop-ark`](oc-desktop-ark) | **进程内 Node v24.2.0**（`@fellow99/node-bridge` + `@fellow99/node-runtime`，ohpm）+ **ArkWeb**；无 Electron、无 Chromium | `org.fellow99.oc.OCDesktopArk` |
-| **Electron on HarmonyOS Edition** | [`oc-desktop-hos`](oc-desktop-hos) | **Electron 37**（Node 22.17.0 / Chromium 138）+ ArkWeb / Chromium 渲染 | `org.fellow99.oc.OCDesktop` |
+| **HarmonyOS Edition** | [`oc-desktop-ark`](./oc-desktop-ark) | in-process Node v24.2 | ArkWeb (no Electron, no Chromium) |
+| **Electron on HarmonyOS Edition** | [`oc-desktop-hos`](./oc-desktop-hos) | Electron 37 (Node 22 / Chromium 138) | Chromium |
+| **Android Edition** | [`oc-desktop-android`](./oc-desktop-android) | in-process Node v24.2 | system WebView |
 
-两者是**同一产品的两个独立版别**，可同机共存：
+All three are third-party ports and are not affiliated with the upstream opencode team.
 
-- 同名上游基线：opencode **v2.0.26**（tag `v2.0.26` / 提交 `9b4ec5714d` / 分支 `Branch_v2.0.26`）；
-- 同一份官方 Web UI：都由服务端**同源托管**，零前端分叉；
-- 差异只在「**谁提供 Node**、**谁渲染**」：Ark 版用进程内 Node + ArkWeb；Electron 版用 Electron 自带 Node + Electron 窗口。
+- Product website: <https://fellow99.github.io/oc-desktop-website/> ([repo](./oc-desktop-website))
+- Upstream: [`opencode`](https://github.com/anomalyco/opencode) (submodule, branch `v2`)
 
-> 两者均**非 opencode 团队构建**，与上游无隶属关系；opencode 为 MIT 开源项目，本工作区仅做第三方移植。
+> 🚧 This is a porting / engineering effort, not a product release. No app-store distribution yet; packages are installed by side-loading (HAP / APK).
 
-## 二、子工程
+---
 
-| 工程 | 定位 | 一句话 |
-|---|---|---|
-| [`opencode`](opencode) | 上游（submodule，**只读基线**） | opencode v2.0.26 源码；两个版别只对它做**幂等补丁**，不建立长期分叉。 |
-| [`oc-desktop-ark`](oc-desktop-ark) | **HarmonyOS Edition**（应用） | 无 Electron、无 Chromium：`EntryAbility` 把 Node 运行时投进应用进程，Node 侧以 `serve` 语义跑 opencode 服务端（同源托管 `/api/*` 与内嵌 Web UI），ArkWeb 加载 `http://127.0.0.1:<port>/`。含 `specs/`（9 个模块 + 项目级规格）、`payload/`（Node 宿主入口）、`patches/v2.0.26/`（0001/0003/0006）与构建流水线。 |
-| [`oc-desktop-hos`](oc-desktop-hos) | **Electron on HarmonyOS Edition**（应用） | 用 `harmonypc-electron` 提供的 Electron-on-HarmonyOS 运行时承载 opencode 服务端；已构建、签名，并在真机完成安装启动与基本流程验证（v2.0.26，证据见 `oc-desktop-hos/docs/鸿蒙环境能力清单-v2.0.26.md` §10 / §11.2）。含 8 条上游补丁（`patches/v2.0.26/0001–0008`）与 ACL / 能力清单 / 真机记录。 |
-| [`harmonypc-electron`](harmonypc-electron) | Electron-on-HarmonyOS 运行时（submodule） | Electron 鸿蒙外壳与 `libelectron.so` 适配层；**只有 Electron on HarmonyOS Edition 使用**，HarmonyOS Edition **不依赖**它。 |
-| [`oc-desktop-website`](oc-desktop-website) | 产品官网（submodule） | 纯静态落地页（中英双语）：两个鸿蒙版别的定位、能力与仓库入口。 |
+## 1. Editions
 
-| [`oc-desktop-android`](oc-desktop-android) | **Android Edition**（应用） | 进程内 Node v24.x（`io.github.fellow99:node-bridge` + `node-runtime`，Maven）+ **系统 WebView**；无 Electron、无内嵌内核：进程内跑 opencode v2.1.2 serve（同源托管 /api/* 与内嵌 Web UI），WebView 加载 127.0.0.1。含 `specs/`（14 模块）、`patches/v2.1.2/`（五件套 + 0009/0010）、四壳插件（git/搜索/工作区/pnpm）、品牌化与构建流水线（补丁→构建→物化→冒烟→回归）。 || `assets/` | 品牌物料 | Logo、截图等（官网与安装包共用）。 |
-| `harmonypc-electron-versions/` | 本地材料（gitignore） | Electron 发行版归档与原生模块编译材料；不入库。 |
+### 1.1 HarmonyOS Edition — `oc-desktop-ark`
 
-## 三、责任分界
+**In-process Node + ArkWeb, no Electron and no Chromium.**
 
-```
-opencode（上游，v2.0.26）
-   │  幂等补丁（各自 patches/，互不共用）
-   ├── oc-desktop-ark ── 依赖 ──> @fellow99/node-bridge + @fellow99/node-runtime
-   │                              （ohpm 双包：Node v24.2.0，进程内）
-   └── oc-desktop-hos ── 依赖 ──> harmonypc-electron（Electron 37）
-                                        │
-                                   oc-desktop-website（对外统一口径）
-```
+- Node v24.2 runs inside the HarmonyOS app process via [`@fellow99/node-bridge`](https://github.com/fellow99/ohos-node-bridge) (`dlopen` + `node::Start`); ArkWeb loads the official Web UI same-origin from `127.0.0.1:<random port>`.
+- Sessions use built-in `node:sqlite` (no patches); the payload is served read-only from resfile.
+- Default **jitless compatibility build** (pure-JS fetch shim / photon shim / wasm fallback).
+- Targets 2in1 / tablet devices.
 
-- **运行时契约**以 [`@fellow99/node-bridge`](https://github.com/fellow99/ohos-node-bridge) 库文档为准
-  （库已上架 [ohpm 中心仓](https://ohpm.openharmony.cn/#/cn/detail/@fellow99/node-bridge)，不再是本工作区的 submodule）；
-- **两个版别的设计依据**分别是 `oc-desktop-ark/docs/000-工程规划.md` 与 `oc-desktop-hos/docs/工程规划-V2.md`；
-- `../opencode` 是**两个版别共用**的 submodule：打补丁前须校验基线 `9b4ec5714d` 且工作树干净（`scripts/apply-patches.mjs` 已内置守卫），**同一时刻只允许一个版别处于「已打补丁」状态**。
+### 1.2 Electron on HarmonyOS Edition — `oc-desktop-hos`
 
-## 四、快速开始
+**Electron 37 on HarmonyOS (Node 22 / Chromium 138).**
+
+- The Electron main process hosts the opencode server in-process; the official Web UI is reused 100% and fully rebranded.
+- Persistence via better-sqlite3 (aarch64-ohos native module); payload streamed from `tar.gz` on first launch.
+- Plain-JS tool plugins cover `shell` / `grep` / `glob`; a Git plugin and a four-directory workspace selector are included.
+- Targets 2in1 / tablet devices.
+
+### 1.3 Android Edition — `oc-desktop-android`
+
+**In-process Node + system WebView, no bundled browser engine.**
+
+- Node v24.2 runs inside the app via `io.github.fellow99:node-bridge`; the system WebView loads the UI same-origin from `127.0.0.1:<random port>`.
+- Sessions use built-in `node:sqlite`; the `assets` tar is self-extracted by Node on first launch.
+- Four in-process plugins: Git, search, workspace roots (SAF tree import + `setCurrent`), and **pnpm**.
+- 16 KB-page-aligned runtime; CI builds a debug APK and publishes a GitHub Release on `v*` tags.
+- Targets tablets / foldables / desktop form factors (phones work too; minSdk 24 / targetSdk 36).
+
+### 1.4 Windows / Linux / macOS
+
+Use the **official upstream opencode desktop release (BETA)**: <https://opencode.ai/zh/download>
+
+Source: <https://github.com/anomalyco/opencode/tree/v2>
+
+---
+
+## 2. Shared baseline (v2.1.2)
+
+All three mobile editions share the same upstream baseline and engineering contract:
+
+- **Upstream**: opencode **v2.1.2** (`a517687fde`, branch `v2`), source-verified.
+- **Official Web UI 100% reused**: the in-app server serves the same `opencode serve` bundle and the same Web UI as upstream.
+- **Idempotent patch model**: patches are numbered (`0001`–`0010`), each with a README documenting why upstream cannot accept it; builds re-apply them on a clean checkout and fail on a dirty tree.
+  - ark: 5 patches (`0001/0003/0006/0007/0008`) · hos: 8 patches (`0001`–`0008`) · android: 7 patches (`0001/0003/0006/0007/0008/0009/0010`).
+- **Local plugins only (L1)**: no online plugin installation; plugins are materialized at build time (copy, never symlink; digest-checked, tamper-self-healing).
+- **Common gates**: upstream bundle built with pinned bun, runtime checksum/size locks, host-side smoke (node24 / node22), payload fingerprint, branding assertions.
+
+The common architecture (random loopback port + per-launch password + same-origin Web UI) is also carried by the official upstream desktop app; the three editions differ only in "who supplies Node, who renders, and how platform gaps are filled".
+
+---
+
+## 3. Capability matrix
+
+Simplified view of the three mobile editions; the fully source-traced matrix lives in [`docs/能力对照清单.md`](./docs/能力对照清单.md).
+
+**Legend**: ✅ available & verified · 🔶 partial / limited / pending verification · ⬜ not shipped · ❌ unavailable on the platform
+
+| Capability | Android | HarmonyOS (ark) | Electron on HOS (hos) |
+|---|---|---|---|
+| Streaming chat / SSE | ✅ | ✅ | ✅ |
+| Image attachment / vision | ✅ | ✅ | ⬜ |
+| File read / write / edit | ✅ | ✅ | ✅ |
+| Shell commands | ✅ | ✅ | ✅ |
+| grep / glob search | ✅ | 🔶 | ✅ |
+| Git (isomorphic-git plugin) | ✅ | ✅ | ✅ |
+| Workspace picker | ✅ | ✅ | ✅ |
+| pnpm in-process | ✅ | ❌ | ❌ |
+| SQLite sessions | ✅ | ✅ | ✅ |
+| Session persistence across restart | ✅ | ✅ | 🔶 |
+| MCP remote (HTTP/SSE) | 🔶 | 🔶 | 🔶 |
+| MCP local (stdio) | ❌ | ❌ | ❌ |
+| Terminal PTY | ❌ | ❌ | ❌ |
+| Web UI branding | ✅ | ❌ | ✅ |
+| Navigation fencing / external links | ✅ | ⬜ | ✅ |
+| Host notifications | ✅ | ⬜ | ⬜ |
+| Background keep-alive | 🔶 | ❌ | 🔶 |
+| JIT-less compatibility form | ⬜ | ✅ | ⬜ |
+| Online plugin installation | ❌ | ❌ | ❌ |
+| Renderer | system WebView | ArkWeb | Chromium |
+| Real-device evidence | 🔶 | ✅ | 🔶 |
+
+Shared platform limits: no terminal PTY, no spawning external node ELF / local stdio MCP / LSP, no online plugin installation, no auto-start at boot. System `sh`/toybox commands and in-process Git are available.
+
+---
+
+## 4. Repository layout
+
+| Path | Role |
+|---|---|
+| [`opencode/`](./opencode) | Upstream submodule (branch `v2`, read-only; pin v2.1.2) |
+| [`oc-desktop-ark/`](./oc-desktop-ark) | HarmonyOS Edition (in-process Node + ArkWeb) |
+| [`oc-desktop-hos/`](./oc-desktop-hos) | Electron on HarmonyOS Edition |
+| [`oc-desktop-android/`](./oc-desktop-android) | Android Edition (in-process Node + system WebView) |
+| [`oc-desktop-website/`](./oc-desktop-website) | Product website (static landing page, EN/中文) |
+| [`harmonypc-electron/`](./harmonypc-electron) | Reference: Electron-on-HarmonyOS shell |
+| [`assets/`](./assets) | Shared brand assets (logo, screenshots) |
+| [`docs/`](./docs) | Cross-edition docs; see [`docs/能力对照清单.md`](./docs/能力对照清单.md) |
+
+Each edition is an independent repository with its own lifecycle; this workspace pins them as git submodules.
+
+---
+
+## 5. Development
+
+Prerequisites: Windows host, Node 24, bun 1.4.x; HarmonyOS editions additionally need DevEco Studio + HarmonyOS SDK, and the Android edition needs the Android SDK (JDK 17).
 
 ```bash
-git clone --recurse-submodules https://github.com/fellow99/opencode-workspace.git
-cd opencode-workspace
+# clone with submodules
+git clone --recursive https://github.com/fellow99/opencode-workspace.git
 
-# HarmonyOS Edition（进程内 Node + ArkWeb）
-cd oc-desktop-ark
-ohpm install                           # @fellow99/node-bridge + @fellow99/node-runtime（ohpm 中心仓）
-node scripts/verify-runtime.mjs        # 运行时锁值校验（libnode.so SHA-256 = runtime.lock.json）
-node scripts/apply-patches.mjs         # 会弄脏 ../opencode
-OPENCODE_NODE_TARGET=node24 node scripts/build-opencode.mjs
-node scripts/collect-opencode.mjs      # → resfile/opencode
-node scripts/smoke-node24.mjs --allow-version-drift
+# each edition is built in its own repo; see its README:
+#   oc-desktop-ark/README.md
+#   oc-desktop-hos/README.md
+#   oc-desktop-android/README.md
 ```
 
-Electron on HarmonyOS Edition 的构建链见 [`oc-desktop-hos/README.md`](oc-desktop-hos/README.md)。
+The upstream `opencode/` tree is **read-only**: all changes are idempotent patches maintained inside each edition's `patches/` directory, never committed into the submodule.
 
-## 五、许可
+---
 
-MIT（各子工程自带 `LICENSE`）。随包分发 Node.js / Electron 时须附各自的第三方许可清单
-（Ark 版见 `oc-desktop-ark/specs/107-compliance`，Electron 版见 `oc-desktop-hos/docs/ACL申请清单.md` 与包内许可文件）。
+## 6. License
+
+MIT — this workspace and the three edition repos. The bundled upstream opencode follows its own license; see each project for details. The HarmonyOS editions additionally embed third-party components (Electron / Chromium / Node.js), whose notices are shipped inside each package.
