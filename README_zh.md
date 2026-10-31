@@ -59,14 +59,14 @@ Windows / Linux / macOS 已有上游官方桌面发行版；本工作区聚焦�
 
 ---
 
-## 二、统一基线（v2.1.2）
+## 二、统一基线（v2.2.5）
 
 三个移动版别共享同一上游基线与工程契约：
 
-- **上游**：opencode **v2.1.2**（`a517687fde`，分支 `v2`），源码核实。
+- **上游**：opencode **v2.2.5**（`9bbb8ce18c`，tag/分支 `v2.2.5` / `Branch_v2.2.5`），源码核实。
 - **官方 Web UI 100% 复用**：应用内服务端与上游同一份 `opencode serve` bundle、同一份 Web UI。
-- **幂等补丁模型**：补丁编号管理（`0001`–`0010`），每条附 README 说明上游为何不能收；构建在干净树上重放，脏树即失败。
-  - ark 5 条（`0001/0003/0006/0007/0008`）· hos 8 条（`0001`–`0008`）· android 7 条（`0001/0003/0006/0007/0008/0009/0010`）。
+- **幂等补丁模型**：补丁编号管理，每条附 README 说明上游为何不能收；构建在干净树上重放，脏树即失败。
+  - ark 5 条（`0001/0003/0006/0007/0008`）· hos 8 条（`0001`–`0008`）· android 8 条（`0001/0003/0006/0007/0008/0009/0010/0011`，含 SAF 工作区动作、品牌化、硬件返回）。
 - **仅本地插件（L1）**：不做在线安装；插件构建期物化（copy 禁 symlink，digest 幂等、篡改自愈）。
 - **统一门禁**：固定 bun 构建上游 bundle、运行时锁值（SHA / 体积）、host 侧 smoke（node24 / node22）、载荷指纹、品牌化断言。
 
@@ -102,7 +102,7 @@ Windows / Linux / macOS 已有上游官方桌面发行版；本工作区聚焦�
 | jitless 兼容形态 | ⬜ | ✅ | ⬜ |
 | 插件在线安装 | ❌ | ❌ | ❌ |
 | 渲染内核 | 系统 WebView | ArkWeb | Chromium |
-| 真机证据充分度 | 🔶 | ✅ | 🔶 |
+| 真机证据充分度 | ✅ | ✅ | 🔶 |
 
 平台共同边界：无终端 PTY、不能 spawn 自带 node ELF / 本地 stdio MCP / LSP、无插件在线安装、无开机自启；系统 `sh`/toybox 命令与进程内 Git 可用。
 
@@ -112,7 +112,7 @@ Windows / Linux / macOS 已有上游官方桌面发行版；本工作区聚焦�
 
 | 路径 | 职责 |
 |---|---|
-| [`opencode/`](./opencode) | 上游 submodule（分支 `v2`，只读；钉 v2.1.2） |
+| [`opencode/`](./opencode) | 上游 submodule（分支 `Branch_v2.2.5`，只读；钉 v2.2.5 `9bbb8ce18c`） |
 | [`oc-desktop-ark/`](./oc-desktop-ark) | HarmonyOS Edition（进程内 Node + ArkWeb） |
 | [`oc-desktop-hos/`](./oc-desktop-hos) | Electron on HarmonyOS Edition |
 | [`oc-desktop-android/`](./oc-desktop-android) | Android Edition（进程内 Node + 系统 WebView） |

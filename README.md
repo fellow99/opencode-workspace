@@ -59,14 +59,14 @@ Source: <https://github.com/anomalyco/opencode/tree/v2>
 
 ---
 
-## 2. Shared baseline (v2.1.2)
+## 2. Shared baseline (v2.2.5)
 
 All three mobile editions share the same upstream baseline and engineering contract:
 
-- **Upstream**: opencode **v2.1.2** (`a517687fde`, branch `v2`), source-verified.
+- **Upstream**: opencode **v2.2.5** (`9bbb8ce18c`, tag/branch `v2.2.5` / `Branch_v2.2.5`), source-verified.
 - **Official Web UI 100% reused**: the in-app server serves the same `opencode serve` bundle and the same Web UI as upstream.
-- **Idempotent patch model**: patches are numbered (`0001`–`0010`), each with a README documenting why upstream cannot accept it; builds re-apply them on a clean checkout and fail on a dirty tree.
-  - ark: 5 patches (`0001/0003/0006/0007/0008`) · hos: 8 patches (`0001`–`0008`) · android: 7 patches (`0001/0003/0006/0007/0008/0009/0010`).
+- **Idempotent patch model**: patches are numbered, each with a README documenting why upstream cannot accept it; builds re-apply them on a clean checkout and fail on a dirty tree.
+  - ark: 5 patches (`0001/0003/0006/0007/0008`) · hos: 8 patches (`0001`–`0008`) · android: 8 patches (`0001/0003/0006/0007/0008/0009/0010/0011`, incl. SAF workspace actions, branding, and hardware-back wiring).
 - **Local plugins only (L1)**: no online plugin installation; plugins are materialized at build time (copy, never symlink; digest-checked, tamper-self-healing).
 - **Common gates**: upstream bundle built with pinned bun, runtime checksum/size locks, host-side smoke (node24 / node22), payload fingerprint, branding assertions.
 
@@ -102,7 +102,7 @@ Simplified view of the three mobile editions; the fully source-traced matrix liv
 | JIT-less compatibility form | ⬜ | ✅ | ⬜ |
 | Online plugin installation | ❌ | ❌ | ❌ |
 | Renderer | system WebView | ArkWeb | Chromium |
-| Real-device evidence | 🔶 | ✅ | 🔶 |
+| Real-device evidence | ✅ | ✅ | 🔶 |
 
 Shared platform limits: no terminal PTY, no spawning external node ELF / local stdio MCP / LSP, no online plugin installation, no auto-start at boot. System `sh`/toybox commands and in-process Git are available.
 
@@ -112,7 +112,7 @@ Shared platform limits: no terminal PTY, no spawning external node ELF / local s
 
 | Path | Role |
 |---|---|
-| [`opencode/`](./opencode) | Upstream submodule (branch `v2`, read-only; pin v2.1.2) |
+| [`opencode/`](./opencode) | Upstream submodule (branch `Branch_v2.2.5`, read-only; pin v2.2.5 `9bbb8ce18c`) |
 | [`oc-desktop-ark/`](./oc-desktop-ark) | HarmonyOS Edition (in-process Node + ArkWeb) |
 | [`oc-desktop-hos/`](./oc-desktop-hos) | Electron on HarmonyOS Edition |
 | [`oc-desktop-android/`](./oc-desktop-android) | Android Edition (in-process Node + system WebView) |
