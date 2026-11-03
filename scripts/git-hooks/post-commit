@@ -1,0 +1,18 @@
+#!/bin/sh
+# post-commit — 每次提交后自动同步 CodeGraph 索引
+# 保持 .codegraph 与刚提交的代码一致。任何失败都不阻塞提交本身。
+#
+# 使用说明：
+#   codegraph sync 是增量更新（快、日常用）；codegraph index 是全量重建（切换分支/大重构后用）。
+#   若缺少索引可运行 codegraph init -i；若残留锁 files locked 运行 codegraph unlock。
+
+# 定位当前 git 仓库根目录（子模块内提交时即子模块根目录）
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || ROOT="$(pwd)"
+
+# git hooks 环境可能缺 npm 全局 bin，手动补上
+export PATH="/c/Users/fello/AppData/Roaming/npm:$PATH"
+
+if command -v codegraph >/dev/null 2>&1 && [ -d "$ROOT/.codegraph" ]; then
+  ( cd "$ROOT" && codegraph sync >/dev/null 2>&1 ) || exit 0
+fi
+exit 0
