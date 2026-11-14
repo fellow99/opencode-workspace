@@ -36,7 +36,7 @@
 ### 3.1 应用身份
 
 - **FR-013-001**：应用显示名 MUST 为 **OC Desktop**；版别后缀（Ark/Android）只用于仓库/文档，不进入用户可见应用名。
-- **FR-013-002**：包名 MUST 保持各版独立（`org.fellow99.oc.OCDesktopArk` / `...OCDesktop` / `...OCDesktopAndroid`），不得复用上游包名。
+- **FR-013-002**：包名 MUST 保持各版独立（`top.fellow99.oc.OCDesktopArk` / `top.fellow99.oc.OCDesktopHos` / `top.fellow99.oc.OCDesktopAndroid`），不得复用上游包名。
 - **FR-013-003**：关于页/设置页 MUST 显示版本号、上游基线、非官方声明与许可入口。
 
 ### 3.2 Web UI
